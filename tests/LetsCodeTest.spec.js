@@ -31,3 +31,31 @@ test ('Input page', async ({page,homePage,inputPage}) => {
     await expect(inputPage.readOnlyField).toHaveAttribute('readonly', '');
 
 });
+
+
+test ('Buttons page', async ({page,homePage,buttonsPage}) => {
+    await homePage.buttonsLink.click();
+    //go home and back 
+    await buttonsPage.homeBtn.click();
+    const expectedUrl = 'https://letcode.in/';
+    await expect(page).toHaveURL(expectedUrl);
+    await page.goBack({ waitUntil: 'networkidle' });
+    await expect(page).toHaveURL('https://letcode.in/buttons');
+    //get buttons x,y ,width and height demo
+    await buttonsPage.getButtonCoordinates();
+   
+    //get color of button which is not in dom 
+    const color = await buttonsPage.colorBtn.evaluate((element) => {
+        return getComputedStyle(element).backgroundColor; // Get the text color
+    });
+    console.log(`Button's text color is: ${color}`);
+
+    //disable btn check 
+    await expect(buttonsPage.disabledBtn).toBeDisabled();
+
+    //hold btn to change state
+    await buttonsPage.clickAndHoldBtn(page);
+});
+
+
+
