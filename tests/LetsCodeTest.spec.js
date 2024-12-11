@@ -104,4 +104,18 @@ test ('Frame page', async ({page,homePage,framePage}) => {
 });
 
 
+test ('Simple Alert', async ({page,homePage,alertsPage}) => {
+    await homePage.alertsLink.click();
+    await expect(page).toHaveURL('https://letcode.in/alert');
+
+    //notice diff order of steps , first we do listener for events and then actual click on btn that triggers alert
+    console.log("Simple Alert");
+    console.log("------------------------------");
+    await alertsPage.alertListener(page,'dismiss'); //function takes either "dismiss" or accept"
+    await alertsPage.simpleAlert.click();
+});
+
+
+
+
 
