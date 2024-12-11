@@ -58,4 +58,50 @@ test ('Buttons page', async ({page,homePage,buttonsPage}) => {
 });
 
 
+test ('Dropdowns page', async ({page,homePage,dropdownPage}) => {
+    await homePage.dropdownsLink.click();
+    await expect(page).toHaveURL('https://letcode.in/dropdowns');
+
+    //dropdown fruits
+    await dropdownPage.selectSingleOption(dropdownPage.fruits,1,'Apple');
+    //select multiple options
+    const heroes = ['Ant-Man', 'Hellboy', 'Marvelman'];
+    await dropdownPage.multiSelectOption(dropdownPage.superHeroes,heroes);
+    //verify that all were selected
+    const selectedHeroes = await dropdownPage.superHeroes.locator('option:checked').allTextContents();
+    expect(selectedHeroes).toEqual(heroes);
+
+    //select last option and print all options
+    const lastOptionValue = await dropdownPage.lang.locator('option').nth(-1).getAttribute('value');
+    //await dropdown.selectOption(lastOptionValue);
+    await dropdownPage.lang.selectOption(lastOptionValue)
+    const lastOptionText = await dropdownPage.lang.locator('option:checked').textContent()
+    expect(lastOptionText).toBe('C#');
+    const options = await dropdownPage.lang.locator('option').allInnerTexts();// get all options of dropdown
+    console.log(options);
+  
+});
+
+
+test ('Frame page', async ({page,homePage,framePage}) => {
+    console.log('Executing tests for Frame page');
+    console.log('**********************************');
+    await homePage.frameLink.click();
+    await expect(page).toHaveURL('https://letcode.in/frame');
+    await framePage.firstName.click();
+    await framePage.firstName.fill('Robert');
+    await framePage.lastName.click();
+    await framePage.lastName.fill('Leskovsek');
+    const text =  await framePage.label.textContent();
+    expect(text).toBe('You have entered Robert Leskovsek');
+    console.log(text);
+
+    //email field is inside the child frame, 2nd frame to be exact
+    //also notice the page.frame function ..so a diff način to find frames
+    const email = 'robert.drek@drek.net';
+    await framePage.writeEmail(page,email);
+    
+});
+
+
 

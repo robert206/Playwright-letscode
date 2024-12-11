@@ -3,27 +3,10 @@ import { test as base } from '@playwright/test';
 import { HomePage } from '../page-objects/HomePage.js';
 import { InputPage } from '../page-objects/InputPage.js';
 import { ButtonsPage } from '../page-objects/ButtonsPage.js';
-/*import { CheckBoxPage } from '../page-objects/CheckBoxPage.js';
-import { RadioBtnPage } from '../page-objects/RadioBtnPage.js';
-import { WebTablesPage } from '../page-objects/WebTablesPage.js';
-import { ButtonsPage } from '../page-objects/ButtonsPage.js';
-import {LinksPage} from '../page-objects/LinksPage.js';
-import {FormsPage} from '../page-objects/FormsPage.js';
-import { AlertsPage } from '../page-objects/AlertsPage.js';
-import { ModalPage } from '../page-objects/ModalPage.js';
-import { AccordianPage } from '../page-objects/AccordianPage.js';
-import { SliderPage } from '../page-objects/SliderPage.js';
-import { ProgressBarPage } from '../page-objects/ProgressBarPage.js';
-import { SelectMenuPage } from '../page-objects/SelectMenuPage.js';
-import { InteractionsPage } from '../page-objects/InteractionsPage.js';
-import { DroppablePage } from '../page-objects/DroppablePage.js';
-import { BookStorePage } from '../page-objects/BookStorePage.js';
-import { APIRequest } from '../page-objects/APIRequest.js'; */
+import { DropdownPage} from '../page-objects/DropdownPage.js';
+import { FramePage } from '../page-objects/FramePage.js';
 
-
-
-//import { HomePage } from '../page-objects/HomePage.js';
-//import { TextBoxPage } from '../page-objects/TextBoxPage.js';
+//page.goto appends to existing baseUrl set in playwright.config.js
 export const test = base.extend({
      homePage: async ({ page }, use) => {
         await page.goto('/test');
@@ -41,9 +24,15 @@ export const test = base.extend({
 
     buttonsPage: async ({page},use) => {
         await use (new ButtonsPage(page));
-    }
+    },
 
-    
+    dropdownPage: async ({page},use) => {
+        await use (new DropdownPage(page));
+    },
+
+    framePage: async ({page}, use) => {
+        await use (new FramePage(page));
+    }    
 });
 
 export const expect = test.expect;
