@@ -1,5 +1,6 @@
 // eslint-disable-next-line semi
 
+const { text } = require('stream/consumers');
 const {test,expect} = require('../fixture/PageObjectFixture');
 //import {test,expect} from '../fixture/PageObjectFixture';
 
@@ -103,7 +104,7 @@ test ('Frame page', async ({page,homePage,framePage}) => {
     
 });
 
-
+//diff types of alerts
 test ('Simple Alert', async ({page,homePage,alertsPage}) => {
     await homePage.alertsLink.click();
     await expect(page).toHaveURL('https://letcode.in/alert');
@@ -111,11 +112,80 @@ test ('Simple Alert', async ({page,homePage,alertsPage}) => {
     //notice diff order of steps , first we do listener for events and then actual click on btn that triggers alert
     console.log("Simple Alert");
     console.log("------------------------------");
-    await alertsPage.alertListener(page,'dismiss'); //function takes either "dismiss" or accept"
+    await alertsPage.alertListener(page,'accept',''); //function takes either "dismiss" or accept"
     await alertsPage.simpleAlert.click();
 });
 
+//confirm alert
+test ('Confirm Alert', async ({page,homePage,alertsPage}) => {
+    await homePage.alertsLink.click();
+    await expect(page).toHaveURL('https://letcode.in/alert');
+
+    //notice diff order of steps , first we do listener for events and then actual click on btn that triggers alert
+    console.log("Confirm Alert");
+    console.log("------------------------------");
+    await alertsPage.alertListener(page,'dismiss',''); //function takes either "dismiss" or accept"
+    await alertsPage.confirmAlert.click();
+});
+
+//prompt alert
+test ('Prompt Alert', async ({page,homePage,alertsPage}) => {
+    await homePage.alertsLink.click();
+    await expect(page).toHaveURL('https://letcode.in/alert');
+
+    //notice diff order of steps , first we do listener for events and then actual click on btn that triggers alert
+    console.log("Prompt Alert");
+    console.log("------------------------------");
+    await alertsPage.alertListener(page,'accept','Robert'); //function takes either "dismiss" or accept"
+    await alertsPage.promptAlert.click();
+});
 
 
+test ('Modern Alert', async ({page,homePage,alertsPage}) => {
+    await homePage.alertsLink.click();
+    await expect(page).toHaveURL('https://letcode.in/alert');
 
+    //notice diff order of steps , first we do listener for events and then actual click on btn that triggers alert
+    console.log("Modern Alert");
+    console.log("------------------------------");
+    await alertsPage.modernAlert.click();
+    await expect(alertsPage.modernAlertMsg).toBeVisible();
+    await alertsPage.closeModernAlert.click();
+});
+
+
+//radio btns
+test ('Radio Buttons demo', async ({page,homePage,radioPage}) => {
+    await homePage.radioLink.click();
+    await expect(page).toHaveURL('https://letcode.in/radio');
+
+    /* iterate through groups of radio btn options 
+    and check that at any given time only one from the group is selected..
+    using some functions i wrote in RadioPage class */
+    await radioPage.iterateAll(radioPage.firstGroup);
+    await radioPage.iterateAll(radioPage.secondGroup);
+    
+    //this one will always fail as both are selected -bug
+    //await radioPage.iterateAll(radioPage.thirdGroup);
+
+    //find one that is already checked on page
+    for (let i= 0;i < await radioPage.fourthGroup.count();i++) {
+        let radioButton = await radioPage.fourthGroup.nth(i);
+        if (await radioButton.isChecked()) {
+            let label = await radioButton.locator('..'); // Get the parent label
+            let text = await label.innerText(); // Extract text
+            console.log('Selected button is: '+ text);
+            break;
+        }
+    }
+
+    //find disabled button
+    await radioPage.areThereDisabledRadioBtns(radioPage.fifthGroup);
+    //is checkbox checked 
+    const isChecked = await radioPage.checkbox1.isChecked();
+    expect(isChecked).toBeTruthy();
+
+    
+
+});
 

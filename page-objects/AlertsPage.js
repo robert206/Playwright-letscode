@@ -1,5 +1,3 @@
-const {expect} = require('@playwright/test');
-
 class AlertsPage {
     constructor(page) {
         this.page = page;
@@ -7,9 +5,11 @@ class AlertsPage {
         this.confirmAlert = page.locator('#confirm');
         this.promptAlert = page.locator('#prompt');
         this.modernAlert = page.locator('#modern');
+        this.modernAlertMsg = page.locator('p:has-text("Modern Alert")');
+        this.closeModernAlert = page.locator('.modal-close.is-large');
     }
 
-    async alertListener (page,action) {
+    async alertListener (page,action,promptMessage) {
         page.on('dialog', async (dialog) => {
             console.log(`Alert message: ${dialog.message()}`);
             console.log(`Alert type: ${dialog.type()}`);
@@ -18,7 +18,7 @@ class AlertsPage {
                 await dialog.dismiss();
             } 
             else {
-                await dialog.accept();
+                await dialog.accept(promptMessage);
             }
         });
     }
