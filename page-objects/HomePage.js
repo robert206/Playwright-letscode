@@ -7,6 +7,7 @@ class HomePage {
         this.alertsLink = page.locator('[href="/alert"]');
         this.frameLink = page.locator('[href="/frame"]');
         this.radioLink = page.locator('[href="/radio"]');
+        this.elementsLink = page.locator('[href="/elements"]');
     } 
 }
 

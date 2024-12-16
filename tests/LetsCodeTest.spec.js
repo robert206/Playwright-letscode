@@ -1,6 +1,6 @@
 // eslint-disable-next-line semi
 
-const { text } = require('stream/consumers');
+
 const {test,expect} = require('../fixture/PageObjectFixture');
 //import {test,expect} from '../fixture/PageObjectFixture';
 
@@ -184,8 +184,40 @@ test ('Radio Buttons demo', async ({page,homePage,radioPage}) => {
     //is checkbox checked 
     const isChecked = await radioPage.checkbox1.isChecked();
     expect(isChecked).toBeTruthy();
+});
 
-    
+
+test ('Elements page github', async ({page,homePage,elementsPage}) => {
+    await homePage.elementsLink.click();
+    await expect(page).toHaveURL('https://letcode.in/elements');
+
+    await elementsPage.usernameField.fill('Robert206');
+    await elementsPage.searchBtn.click();
+
+    //wait for repos to load -custom function
+    await elementsPage.waitForRepos(page);    
+    expect(await elementsPage.reposList.count()).toBeGreaterThan(0);
+
+    const repos = await elementsPage.listAllRepos();
+    console.log(repos);
+
+
+
+    /* const [newTab] = await Promise.all([
+        page.context().waitForEvent('page'), // Wait for the new tab to open
+        page.locator('[href="https://github.com/robert206/cucumberSeleniumTest"]').click(), // Click on the link
+    ]);
+
+    // Ensure the new tab was opened
+    expect(newTab).not.toBeNull();
+
+    // Wait for the new tab to load
+    await newTab.waitForLoadState();
+
+    // Perform assertions on the new tab
+    const newTabURL = newTab.url();
+    console.log('New Tab URL:', newTabURL);
+    expect(newTabURL).toContain('https://github.com/robert206/cucumberSeleniumTest'); */
 
 });
 
