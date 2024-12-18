@@ -5,14 +5,15 @@ class ElementsPage {
         this.page = page;
         this.usernameField = page.locator('[name="username"]');
         this.searchBtn = page.locator('#search');
-        this.reposList = page.locator('app-gitrepos div ol li');
+        this.reposList = page.locator('app-gitrepos div ol li'); //repo array
+        this.profileTags = page.locator('.tag.is-info');
     }
 
     async waitForRepos(page) {
         await page.waitForSelector("app-gitrepos div ol li",{ timeout: 5000 });
     }
 
-    async listAllRepos() {
+    async getAllRepos() {
         let links = [];
         for (let i=0;i < await this.reposList.count();i++) {
             links[i] = await this.reposList.nth(i).innerText();
@@ -20,38 +21,35 @@ class ElementsPage {
         return links;
     }
 
-    async verifyLinkOpensInNewTab(expectedURLPart, expectedTitle) {
-        // Listen for a new tab (popup) and click the link
+    async checkProfileLabelCount(index,expectedCount) {
+        const actualCount = await this.profileTags.nth(index).innerText();
+        expect(expectedCount.toString()).toEqual(actualCount);
+    }
+
+
+    async verifyLinkOpensInNewTab(page,repoUrl) {
+        //listen for a new tab pop-up and click link
+        const loc = '[href="' + repoUrl + '"]';
         const [newTab] = await Promise.all([
-            this.page.context().waitForEvent('page'), // Wait for the new tab
-            this.link.click(), // Click the link
+            page.context().waitForEvent('page'), // Wait for the new tab
+            page.locator(loc).click(),
         ]);
 
-        // Ensure the new tab is opened
+        //check if new tab was opened
         if (!newTab) {
             throw new Error('No new tab was opened!');
         }
-
-        // Wait for the new tab to load
+        //wait for tab to load completely
         await newTab.waitForLoadState();
+        //console.log("new tab : ", newTab.url());
 
-        // Validate the new tab's URL
-        const newTabURL = newTab.url();
-        console.log('New Tab URL:', newTabURL);
-        if (!newTabURL.includes(expectedURLPart)) {
-            throw new Error(`New tab URL does not contain expected part: ${expectedURLPart}`);
-        }
-
-        // Validate the new tab's title
+        //check if url matches with expected url
+        expect(newTab.url()).toBe(repoUrl);
+        //check if page title contains usrname + repo name
         const title = await newTab.title();
-        console.log('New Tab Title:', title);
-        if (title !== expectedTitle) {
-            throw new Error(`New tab title does not match expected title: ${expectedTitle}`);
-        }
-
-        console.log('New tab verification successful!');
+        let partialTitle = repoUrl.split('https://github.com/')[1];
+        expect(title).toContain(partialTitle);
     }
-
 
 
 }

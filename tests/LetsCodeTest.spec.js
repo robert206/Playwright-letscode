@@ -193,31 +193,45 @@ test ('Elements page github', async ({page,homePage,elementsPage}) => {
 
     await elementsPage.usernameField.fill('Robert206');
     await elementsPage.searchBtn.click();
+    //assert if number of public repos is correct
+    await elementsPage.checkProfileLabelCount(0,5);
+    //assert public gist
+    await elementsPage.checkProfileLabelCount(1,0);
+    //assert followers
+    await elementsPage.checkProfileLabelCount(2,0);
 
     //wait for repos to load -custom function
     await elementsPage.waitForRepos(page);    
     expect(await elementsPage.reposList.count()).toBeGreaterThan(0);
 
-    const repos = await elementsPage.listAllRepos();
+    //just list them for fun sake
+    const repos = await elementsPage.getAllRepos();
     console.log(repos);
 
+    /*
+    click on each repo link and verify that it is opened in new tab
+    also verifies if new tab title vsebuje correct link name
+    */
+    for (const repo of repos) {
+        await elementsPage.verifyLinkOpensInNewTab(page,repo);
+    }
 
+});
 
-    /* const [newTab] = await Promise.all([
-        page.context().waitForEvent('page'), // Wait for the new tab to open
-        page.locator('[href="https://github.com/robert206/cucumberSeleniumTest"]').click(), // Click on the link
-    ]);
+//Drag and drop
+test ('Drag And Drop', async ({page,homePage,dragDropPage}) => {
+    await homePage.dragDropLink.click();
+    await expect(page).toHaveURL('https://letcode.in/draggable');
 
-    // Ensure the new tab was opened
-    expect(newTab).not.toBeNull();
+    await dragDropPage.dragBoxWithinBoundaries();
 
-    // Wait for the new tab to load
-    await newTab.waitForLoadState();
-
-    // Perform assertions on the new tab
-    const newTabURL = newTab.url();
-    console.log('New Tab URL:', newTabURL);
-    expect(newTabURL).toContain('https://github.com/robert206/cucumberSeleniumTest'); */
+    // Optionally verify the box's final position is within the container
+    const box = await dragDropPage.draggableBox.boundingBox();
+    const container = await dragDropPage.container.boundingBox();
+    expect(box.x).toBeGreaterThanOrEqual(container.x);
+    expect(box.y).toBeGreaterThanOrEqual(container.y);
+    expect(box.x + box.width).toBeLessThanOrEqual(container.x + container.width);
+    expect(box.y + box.height).toBeLessThanOrEqual(container.y + container.height);
 
 });
 

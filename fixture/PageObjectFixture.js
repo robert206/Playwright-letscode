@@ -8,6 +8,7 @@ import { FramePage } from '../page-objects/FramePage.js';
 import { AlertsPage } from '../page-objects/AlertsPage.js';
 import { RadioPage } from '../page-objects/RadioPage.js';
 import { ElementsPage } from '../page-objects/ElementsPage.js';
+import { DragDropPage } from '../page-objects/DragDropPage.js';
 
 //page.goto appends to existing baseUrl set in playwright.config.js
 export const test = base.extend({
@@ -47,7 +48,12 @@ export const test = base.extend({
 
     elementsPage: async ({page}, use) => {
         await use (new ElementsPage(page));
+    },
+
+    dragDropPage: async ({page}, use) => {
+        await use (new DragDropPage(page));
     }
+
 });
 
 export const expect = test.expect;
