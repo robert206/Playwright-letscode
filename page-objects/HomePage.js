@@ -9,6 +9,9 @@ class HomePage {
         this.radioLink = page.locator('[href="/radio"]');
         this.elementsLink = page.locator('[href="/elements"]');
         this.dragDropLink = page.locator('[href="/draggable"]');
+        this.sliderLink = page.locator('[href="/slider"]');
+        this.tableLink = page.locator('[href="/table"]');
+        this.formsLink = page.locator('[href="/forms"]');
     } 
 }
 

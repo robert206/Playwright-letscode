@@ -7,6 +7,7 @@ class ElementsPage {
         this.searchBtn = page.locator('#search');
         this.reposList = page.locator('app-gitrepos div ol li'); //repo array
         this.profileTags = page.locator('.tag.is-info');
+
     }
 
     async waitForRepos(page) {

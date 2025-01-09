@@ -1,7 +1,9 @@
-// eslint-disable-next-line semi
 
 
+
+const { before } = require('node:test');
 const {test,expect} = require('../fixture/PageObjectFixture');
+const { table } = require('console');
 //import {test,expect} from '../fixture/PageObjectFixture';
 
 
@@ -159,6 +161,9 @@ test ('Radio Buttons demo', async ({page,homePage,radioPage}) => {
     await homePage.radioLink.click();
     await expect(page).toHaveURL('https://letcode.in/radio');
 
+    console.log("Radio Buttons demo");
+    console.log("------------------------------")
+
     /* iterate through groups of radio btn options 
     and check that at any given time only one from the group is selected..
     using some functions i wrote in RadioPage class */
@@ -223,15 +228,92 @@ test ('Drag And Drop', async ({page,homePage,dragDropPage}) => {
     await homePage.dragDropLink.click();
     await expect(page).toHaveURL('https://letcode.in/draggable');
 
-    await dragDropPage.dragBoxWithinBoundaries();
+    //drag one box inside the other box
+    await dragDropPage.dragBoxWithinBounds(page, dragDropPage.draggableBox, dragDropPage.container);
+    const dragged = await dragDropPage.draggedSuccess;
+    expect (dragged).toBeVisible();
 
-    // Optionally verify the box's final position is within the container
-    const box = await dragDropPage.draggableBox.boundingBox();
-    const container = await dragDropPage.container.boundingBox();
-    expect(box.x).toBeGreaterThanOrEqual(container.x);
-    expect(box.y).toBeGreaterThanOrEqual(container.y);
-    expect(box.x + box.width).toBeLessThanOrEqual(container.x + container.width);
-    expect(box.y + box.height).toBeLessThanOrEqual(container.y + container.height);
+    //multiselect using Ctrl + click in options with specified index
+    await page.goto('https://letcode.in/selectable');
+    const allOptions = await page.locator('#selectable');
+    await page.keyboard.down('Control');
+
+    for(const i of [0,1,3,5]) {
+        await allOptions.nth(i).click();
+    }
+
+    await page.keyboard.up('Control');
+    //check
+   
+});
+
+
+test ('Slideeerrs', async ({page,homePage,dragDropPage}) => {
+    await homePage.sliderLink.click();
+    await expect(page).toHaveURL('https://letcode.in/slider');
+
+    console.log("Slider Demo ");
+    console.log("------------------------------")
+    //counts before moving slider
+    const beforeCount = await dragDropPage.getInteger(dragDropPage.wordLimit);
+    //slider is moved randomly
+    await dragDropPage.dragX(page,dragDropPage.sliderKnob);
+    const afterCount = await dragDropPage.getInteger(dragDropPage.wordLimit); //slider value after random move
+
+    //if slider is moved word limit number is bigger then at start
+    expect(beforeCount).toBeLessThan(afterCount);
+
+    /* click on get countries 
+    and check the list of countries returned
+    compare it with upper label of word limit integer returned */
+    await dragDropPage.getCountriesBtn.click();
+    const countries = await dragDropPage.countryList.textContent();
+    const countryCount = countries.split(" - ").length;
+    expect(countryCount).toBe(afterCount); //should be the same
+});
+
+
+
+//various tables manipulation
+test ('Tables', async ({page,homePage,tablePage}) => {
+    await homePage.tableLink.click();
+    await expect(page).toHaveURL('https://letcode.in/table');
+
+    console.log("Tables demo");
+    console.log("------------------------------")
+
+    // texts retrieved for all item prices in last column and converted to Integer
+    const items = await tablePage.shoppingTablePrices;
+    const totalOfItems = await tablePage.innerTextToSum(items);
+    console.log('Total of all items in column calculated', totalOfItems);
+
+    //same here but for Total sum at bottom 
+    const totalDisplayed = await tablePage.shoppingTotal;
+    const totalShop = await tablePage.innerTextToSum(totalDisplayed);
+    console.log('Total displayed in last row:', totalShop);
+
+    //both compared if are the same
+    expect (totalOfItems).toBe(totalShop);
+
+    /* 
+    Sorting of all columns asc/desc 
+    and checking if sorting works correctly by sorting programatically and comparing with table sort
+    */
+    const sortableHeaders = await tablePage.sortableHeaders;
+    const table = await tablePage.sortTable;
+
+    await tablePage.sortAllColumns(sortableHeaders,table);
+
 
 });
 
+
+test ('Forms page', async ({page,homePage,formsPage}) => {
+    await homePage.formsLink.click();
+    await expect(page).toHaveURL('https://letcode.in/forms');
+
+    
+    console.log("Form with alot of stuff");
+    console.log("------------------------------");
+    
+});
