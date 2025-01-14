@@ -1,9 +1,6 @@
 
-
-
-const { before } = require('node:test');
 const {test,expect} = require('../fixture/PageObjectFixture');
-const { table } = require('console');
+import users from '../data/users.json' assert { type: 'json' };
 //import {test,expect} from '../fixture/PageObjectFixture';
 
 
@@ -192,6 +189,7 @@ test ('Radio Buttons demo', async ({page,homePage,radioPage}) => {
 });
 
 
+
 test ('Elements page github', async ({page,homePage,elementsPage}) => {
     await homePage.elementsLink.click();
     await expect(page).toHaveURL('https://letcode.in/elements');
@@ -223,6 +221,7 @@ test ('Elements page github', async ({page,homePage,elementsPage}) => {
 
 });
 
+
 //Drag and drop
 test ('Drag And Drop', async ({page,homePage,dragDropPage}) => {
     await homePage.dragDropLink.click();
@@ -246,6 +245,7 @@ test ('Drag And Drop', async ({page,homePage,dragDropPage}) => {
     //check
    
 });
+
 
 
 test ('Slideeerrs', async ({page,homePage,dragDropPage}) => {
@@ -303,17 +303,37 @@ test ('Tables', async ({page,homePage,tablePage}) => {
     const table = await tablePage.sortTable;
 
     await tablePage.sortAllColumns(sortableHeaders,table);
-
-
 });
 
 
-test ('Forms page', async ({page,homePage,formsPage}) => {
+test ('Forms page', async ({page,homePage,formPage}) => {
     await homePage.formsLink.click();
     await expect(page).toHaveURL('https://letcode.in/forms');
-
-    
-    console.log("Form with alot of stuff");
+    console.log("Form with a lot of stuff :)");
     console.log("------------------------------");
+    await formPage.fillForm(1);
+    await formPage.submitBtn.click();
+    
+});
+
+
+test ('Download and upload of files', async ({page,homePage,downloadPage}) => {
+    await homePage.downloadLink.click();
+    await expect(page).toHaveURL('https://letcode.in/file');
+
+    await downloadPage.uploadBtn.click();
+    //bypasses native file picker which cannot be used in context of playwright
+    await page.setInputFiles('input[type="file"]', './data/getLogs.sh');
+    await page.waitForLoadState();
+
+    //download formats
+    const [download] = await Promise.all([
+    page.waitForEvent('download'), // Wait for the download to start
+    await downloadPage.xlsBtn.click()
+  ]);
+
+    // Save the downloaded file to a specific location
+    await download.saveAs('../test_results');
+
     
 });

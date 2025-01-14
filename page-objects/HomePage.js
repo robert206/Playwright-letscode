@@ -12,6 +12,7 @@ class HomePage {
         this.sliderLink = page.locator('[href="/slider"]');
         this.tableLink = page.locator('[href="/table"]');
         this.formsLink = page.locator('[href="/forms"]');
+        this.downloadLink = page.locator('[href="/file"]');
     } 
 }
 

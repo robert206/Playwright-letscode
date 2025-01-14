@@ -11,6 +11,7 @@ import { ElementsPage } from '../page-objects/ElementsPage.js';
 import { DragDropPage } from '../page-objects/DragDropPage.js';
 import { TablePage } from '../page-objects/TablePage.js';
 import { FormPage } from '../page-objects/FormPage.js';
+import { DownloadPage } from '../page-objects/DownloadPage.js';
 
 //page.goto appends to existing baseUrl set in playwright.config.js
 export const test = base.extend({
@@ -62,6 +63,10 @@ export const test = base.extend({
 
     formPage: async ({page}, use) => {
         await use (new FormPage(page));
+    },
+    
+    downloadPage: async ({page}, use) => {
+        await use (new DownloadPage(page));
     }
 
 });
