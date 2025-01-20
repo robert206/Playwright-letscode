@@ -1,5 +1,6 @@
 
 const {test,expect} = require('../fixture/PageObjectFixture');
+import { table } from 'node:console';
 import users from '../data/users.json' assert { type: 'json' };
 //import {test,expect} from '../fixture/PageObjectFixture';
 
@@ -324,16 +325,9 @@ test ('Download and upload of files', async ({page,homePage,downloadPage}) => {
     await downloadPage.uploadBtn.click();
     //bypasses native file picker which cannot be used in context of playwright
     await page.setInputFiles('input[type="file"]', './data/getLogs.sh');
-    await page.waitForLoadState();
-
-    //download formats
-    const [download] = await Promise.all([
-    page.waitForEvent('download'), // Wait for the download to start
-    await downloadPage.xlsBtn.click()
-  ]);
-
-    // Save the downloaded file to a specific location
-    await download.saveAs('../test_results');
+    await downloadPage.downloadFiles(page, downloadPage.xlsBtn,'../s1.xlsx');
+    await downloadPage.downloadFiles(page, downloadPage.pdfBtn,'../s2.pdf');
 
     
 });
+

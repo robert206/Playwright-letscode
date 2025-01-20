@@ -13,6 +13,7 @@ class HomePage {
         this.tableLink = page.locator('[href="/table"]');
         this.formsLink = page.locator('[href="/forms"]');
         this.downloadLink = page.locator('[href="/file"]');
+        this.table2Link = page.locator('[href="/advancedtable"]');
     } 
 }
 

@@ -12,10 +12,29 @@ class TablePage {
 
         //table 2 
         this.sortableHeaders2 = page.locator('tr th.sorting');
-        
+
+        //advanced table
+        this.tableRows = page.locator('#advancedtable > tbody > tr'); //actual table rows selector ,resolves all rows displayed
+        this.rowsPerTable = page.locator('select[name="advancedtable_length"]'); // rows perPage selector
+        this.rowsPerPage = page.locator('select[name="advancedtable_length"] > option');  // resolves to all dropdown options, used to traverse list
+    
+
+        this.searchField = page.locator('input[type="search"]'); // Search field
+        this.table2Headers = page.locator('thead > tr > th'); // all table headers for sorting
+
     }
 
 
+    async checkNumberOfRowsPerPage () {
+        const noOfOptions = await this.rowsPerPage.count();
+        console.log("No of options in rows per page :",noOfOptions);
+        for (let i=0; i < noOfOptions; i++) {
+            //click on every possible option of rows per page 5,10,25
+            let rperPage = parseInt(await this.rowsPerTable.nth(i).textContent(),10);
+            await this.rowsPerTable.selectOption(await this.rowsPerPage.nth(i).textContent());
+            console.log("rows per page converted", rperPage);
+        }
+    }
 
     //takes element locator,checks if it resolves to more then one element and fetches its inner text and calcs sum of all 
     async innerTextToSum (element) {
@@ -68,6 +87,14 @@ class TablePage {
     }
 
 
+    async checkRowsPerTable (table,resultsPerPageElement) {
+        const rowsPerPage = await resultsPerPageElement.allTextContents();
+        for ( let row in rowsPerPage) {
+            let actual = await table.count();
+            console.log(actual);
+            console.log (row);
+        }
+    }
 }
 
 export {TablePage};
