@@ -1,47 +1,33 @@
-const {expect, page} = require('@playwright/test');
+const {expect,request} = require('@playwright/test');
 
 class APIRequests {
-    constructor(page) {
-        this.page = page;
-        this.baseUrl = 'https://apichallenges.herokuapp.com';
+    constructor (baseUrl) {
+        this.baseUrl = 'https://restful-booker.herokuapp.com';
     }
 
-    async makePOST (url, body = {}, headers = {}) {
-        // Create an API request context
-        const apiContext = await request.newContext();
-      
-        try {
-          // Perform the POST request
-          const response = await apiContext.post(url, {
-            headers: {
-              'Content-Type': 'application/json', // Default header
-              ...headers, // Merge with any custom headers
-            },
-            data: body, // Attach the body
-          });
-      
-          // Parse the response based on content type
-          const contentType = response.headers()['content-type'];
-          const responseBody = contentType && contentType.includes('application/json')
-            ? await response.json()
-            : await response.text();
-      
-          // Return the response details
-          return {
-            status: response.status(),
-            headers: response.headers(),
-            body: responseBody,
-          };
-        } catch (error) {
-          console.error('Error making POST request:', error);
-          throw error; // Re-throw the error to handle it elsewhere
-        } finally {
-          // Dispose of the API context
-          await apiContext.dispose();
-        }
-      }
+    // get booking token needed for PUT and DELETE requests
+    async getToken (request, endpoint) {
+      const URL = this.baseUrl + endpoint;
 
-    // universal get
+      const response = await request.post(URL, {
+        data: {
+          "username" : "admin",
+          "password" : "password123"
+      },
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      expect (response.status()).toBe(200);
+      const respBody = await response.json();
+      const token = respBody.token; // return token from body with key "token"
+  
+      return token;
+    }
+
+
+   /*  // universal get for some other site
     async getRequest (request, endpoint) {
         const URL = this.baseUrl + endpoint;
         const ch = await this.getChallengeToken (request);
@@ -50,6 +36,7 @@ class APIRequests {
         let response = await request.get(URL,{'headers' : head});
 
         expect (response.status()).toBe(200);
+
         return response;
     } 
 
@@ -64,7 +51,7 @@ class APIRequests {
         }
         return challenge;
     }
-   
+    */
 
 
 }
