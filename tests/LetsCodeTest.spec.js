@@ -1,8 +1,6 @@
 
 const {test,expect} = require('../fixture/PageObjectFixture');
-import { table } from 'node:console';
 import users from '../data/users.json' assert { type: 'json' };
-//import {test,expect} from '../fixture/PageObjectFixture';
 
 
 test ('Input page', async ({page,homePage,inputPage}) => {
