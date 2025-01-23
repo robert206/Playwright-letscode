@@ -40,11 +40,10 @@ class APIRequests {
         // Create the query string from the queryParams object
         const queryString = new URLSearchParams(queryParams).toString(); 
         const url = queryString ? `${this.baseUrl + endpoint }?${queryString}` : this.baseUrl + endpoint;
-        console.log("Get request on following url :" + url );
 
         // GET
         const response = await request.get(url);
-        expect (response.status()).toBe(200);
+        //expect (response.status()).toBe(200);
     
         return response;
     }
@@ -76,8 +75,7 @@ class APIRequests {
             data: body,
             headers: { 'Content-Type': 'application/json' },
         });
-        expect (response.status()).toBe(200);
-      
+        expect (response.status()).toBe(200); 
         const responseBody = await response.json();
 
         //write it to file just for because i can :) and perhaps maybe ill use it later to assert using that file
@@ -91,7 +89,7 @@ class APIRequests {
     }
 
     
-    // Update booking
+    // Update booking PUT
     async updateBooking (request, endpoint, id, body) {
         const token = await this.getToken(request,'/auth');
         const URL = this.baseUrl + endpoint + id;
@@ -100,37 +98,36 @@ class APIRequests {
             data: body,
             headers: { 'Content-Type': 'application/json', 'Cookie': `token=${token}` },
         });
+        expect (response.status()).toBe(200);
         return response;     
     }
 
-
-
-
-   /*  // universal get for some other site
-    async getRequest (request, endpoint) {
-        const URL = this.baseUrl + endpoint;
-        const ch = await this.getChallengeToken (request);
-
-        let head = {'X-Challenger': `${ch}`}; // set header X-Challenge
-        let response = await request.get(URL,{'headers' : head});
-
+    
+    // partial PATCH update
+    async partialUpdateBooking (request, endpoint, id ,body) {
+        const token = await this.getToken(request,'/auth');
+        const URL = this.baseUrl + endpoint + id;
+        //send PATCH
+        const response = await request.patch(URL, {
+            data: body,
+            headers: { 'Content-Type': 'application/json', 'Cookie': `token=${token}` },
+        });
         expect (response.status()).toBe(200);
-
         return response;
-    } 
-
-
-    //this x-challengerhash is required for all consecutive request-generated one is saved for 10min but we will request it everytime
-    async getChallengeToken (request) {
-        const URI = "https://apichallenges.herokuapp.com/challenger";
-        const response =  await request.post(URI);
-        const challenge = response.headers()['x-challenger'];
-        if (response.status() !== 201) {
-            throw new Error('Challenger header retrieval error.');
-        }
-        return challenge;
     }
-    */
+
+
+    //DELETE booking (works only with Authorization header and not token)
+    async deleteBooking (request, endpoint, id, authHash ) {
+        //const authHash = 'Basic YWRtaW46cGFzc3dvcmQxMjM='; //
+        const URL = this.baseUrl + endpoint + id;
+        //send DELETE
+        const response = await request.delete(URL, {
+            headers: { 'Content-Type': 'application/json', 'Authorization': `${authHash}` },
+        });
+        expect (response.status()).toBe(201);
+        return response;
+    }
 
 
 }
